@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FloowRoom — Agendamento de Salas</title>
+  <meta name="description" content="Sistema de controle de disponibilidade e agendamento de salas para reuniões, aulas e eventos."/>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>"/>
+  <link rel="stylesheet" href="/css/style.css"/>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     LOGIN SCREEN
+     ═══════════════════════════════════════════════════════════ -->
+<div id="login-screen" style="display:none">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon">🏠</div>
+      <h1>Floow<span>Room</span></h1>
+    </div>
+    <p class="login-subtitle">Controle de disponibilidade e agendamento de salas</p>
+
+    <div id="login-error" class="login-error"></div>
+
+    <div class="form-group">
+      <label class="form-label" for="inp-login">Login</label>
+      <input id="inp-login" class="form-control" type="text" placeholder="seu.login" autocomplete="username"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="inp-senha">Senha</label>
+      <input id="inp-senha" class="form-control" type="password" placeholder="••••••••" autocomplete="current-password"/>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="login()">
+      Entrar
+    </button>
+    <p style="text-align:center;margin-top:20px;font-size:.78rem;color:var(--muted)">
+      FloowRoom v1.0 · Sistema de Agendamento
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     APP LAYOUT
+     ═══════════════════════════════════════════════════════════ -->
+<div id="app" style="display:none">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🏠</div>
+      <h2>Floow<span>Room</span></h2>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">Principal</div>
+      <div class="nav-item" data-page="dashboard">
+        <span class="icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item" data-page="agenda">
+        <span class="icon">📅</span> Agenda
+      </div>
+      <div class="nav-item" data-page="disponibilidade">
+        <span class="icon">🔍</span> Disponibilidade
+      </div>
+
+      <div class="nav-section">Cadastros</div>
+      <div class="nav-item" data-page="salas">
+        <span class="icon">🏠</span> Salas
+      </div>
+      <div class="nav-item" data-page="pessoas">
+        <span class="icon">👥</span> Pessoas
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div>
+          <div class="user-name" id="user-name">—</div>
+          <div class="user-login" id="user-login">—</div>
+        </div>
+        <button class="btn-logout" title="Sair" onclick="logout()">⏻</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main Content ── -->
+  <main class="main-content">
+
+    <!-- ──────────────── DASHBOARD ──────────────── -->
+    <section id="page-dashboard" class="page">
+      <div class="page-header">
+        <div class="page-title">
+          <h2>📊 Dashboard</h2>
+          <p>Visão geral do sistema de agendamento</p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon icon-primary">🏠</div>
+          <div class="stat-value" id="stat-salas">—</div>
+          <div class="stat-label">Salas Cadastradas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-secondary">👥</div>
+          <div class="stat-value" id="stat-pessoas">—</div>
+          <div class="stat-label">Pessoas Cadastradas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-accent">📅</div>
+          <div class="stat-value" id="stat-agenda">—</div>
+          <div class="stat-label">Total de Agendamentos</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-success">⭐</div>
+          <div class="stat-value" id="stat-hoje">—</div>
+          <div class="stat-label">Agendamentos Hoje</div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <span class="table-title">📅 Próximos Agendamentos</span>
+          <button class="btn btn-ghost btn-sm" onclick="navigate('agenda')">Ver todos →</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Sala</th><th>Pessoa</th><th>Tipo</th><th>Início</th>
+            </tr>
+          </thead>
+          <tbody id="dash-proximos">
+            <tr><td colspan="4" style="text-align:center;padding:30px;color:var(--muted)">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ──────────────── SALAS ──────────────── -->
+    <section id="page-salas" class="page">
+      <div class="page-header">
+        <div class="page-title">
+          <h2>🏠 Salas</h2>
+          <p>Cadastro e gestão das salas disponíveis</p>
+        </div>
+        <button class="btn btn-primary" onclick="openSalaModal()">
+          ➕ Nova Sala
+        </button>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <span class="table-title">Salas Cadastradas</span>
+          <div class="search-wrapper">
+            <input id="search-salas" class="search-input" placeholder="Buscar por número…"/>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Número</th><th>Atualizado por</th><th>Ações</th></tr>
+          </thead>
+          <tbody id="tbl-salas">
+            <tr><td colspan="4" style="text-align:center;padding:30px;color:var(--muted)">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ──────────────── PESSOAS ──────────────── -->
+    <section id="page-pessoas" class="page">
+      <div class="page-header">
+        <div class="page-title">
+          <h2>👥 Pessoas</h2>
+          <p>Cadastro de locatários e solicitantes</p>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-ghost btn-sm" onclick="addPessoaTipo()" title="Adicionar tipo de pessoa">
+            ⚙️ Tipos
+          </button>
+          <button class="btn btn-primary" onclick="openPessoaModal()">
+            ➕ Nova Pessoa
+          </button>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-toolbar">
+          <span class="table-title">Pessoas Cadastradas</span>
+          <div class="search-wrapper">
+            <input id="search-pessoas" class="search-input" placeholder="Buscar por nome ou CPF…"/>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr><th>Nome</th><th>CPF</th><th>Telefone</th><th>Tipo</th><th>Ações</th></tr>
+          </thead>
+          <tbody id="tbl-pessoas">
+            <tr><td colspan="5" style="text-align:center;padding:30px;color:var(--muted)">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ──────────────── AGENDA ──────────────── -->
+    <section id="page-agenda" class="page">
+      <div class="page-header">
+        <div class="page-title">
+          <h2>📅 Agenda de Salas</h2>
+          <p>Todos os agendamentos ativos</p>
+        </div>
+        <div style="display:flex;gap:10px">
+          <button class="btn btn-ghost btn-sm" onclick="addEventoTipo()" title="Adicionar tipo de evento">
+            ⚙️ Tipos
+          </button>
+          <button class="btn btn-primary" onclick="openAgendaModal()">
+            ➕ Novo Agendamento
+          </button>
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px">
+        <div class="search-wrapper">
+          <input id="search-agenda" class="search-input" style="width:300px" placeholder="Buscar por sala, pessoa ou evento…"/>
+        </div>
+      </div>
+
+      <div class="agenda-grid" id="agenda-grid">
+        <div class="empty-state" style="grid-column:1/-1">
+          <div class="empty-icon">📅</div>
+          <p>Carregando agendamentos…</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ──────────────── DISPONIBILIDADE ──────────────── -->
+    <section id="page-disponibilidade" class="page">
+      <div class="page-header">
+        <div class="page-title">
+          <h2>🔍 Disponibilidade</h2>
+          <p>Verifique se uma sala está disponível em determinado período</p>
+        </div>
+      </div>
+
+      <div class="dispon-form">
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Sala</label>
+          <select id="dispon-sala" class="form-control"></select>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Data/Hora Início</label>
+          <input id="dispon-inicio" type="datetime-local" class="form-control"/>
+        </div>
+        <div class="form-group" style="margin:0">
+          <label class="form-label">Data/Hora Fim</label>
+          <input id="dispon-fim" type="datetime-local" class="form-control"/>
+        </div>
+        <button class="btn btn-primary" onclick="verificarDisponibilidade()">
+          🔍 Verificar
+        </button>
+      </div>
+
+      <div id="dispon-result"></div>
+    </section>
+
+  </main>
+</div><!-- /#app -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     MODAIS
+     ═══════════════════════════════════════════════════════════ -->
+
+<!-- Modal: Sala -->
+<div id="modal-sala-overlay" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modal-sala-title">Nova Sala</h3>
+      <button class="modal-close" onclick="closeModal('modal-sala')">✕</button>
+    </div>
+    <div id="modal-sala">
+      <div class="form-group">
+        <label class="form-label" for="inp-sala-numero">Número da Sala *</label>
+        <input id="inp-sala-numero" class="form-control" type="number" min="1" placeholder="Ex: 101"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-sala')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveSala()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Pessoa -->
+<div id="modal-pessoa-overlay" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modal-pessoa-title">Nova Pessoa</h3>
+      <button class="modal-close" onclick="closeModal('modal-pessoa')">✕</button>
+    </div>
+    <div id="modal-pessoa">
+      <div class="form-group">
+        <label class="form-label" for="inp-pessoa-nome">Nome Completo *</label>
+        <input id="inp-pessoa-nome" class="form-control" type="text" placeholder="Nome completo"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="inp-pessoa-cpf">CPF *</label>
+        <input id="inp-pessoa-cpf" class="form-control" type="text" placeholder="000.000.000-00"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="inp-pessoa-nascimento">Data de Nascimento</label>
+        <input id="inp-pessoa-nascimento" class="form-control" type="date"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="inp-pessoa-telefone">Telefone</label>
+        <input id="inp-pessoa-telefone" class="form-control" type="text" placeholder="(00) 00000-0000"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo de Pessoa</label>
+        <select class="form-control sel-pessoa-tipo">
+          <option value="">— Selecione —</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-pessoa')">Cancelar</button>
+      <button class="btn btn-primary" onclick="savePessoa()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Agenda -->
+<div id="modal-agenda-overlay" class="modal-overlay">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-header">
+      <h3 class="modal-title">Novo Agendamento</h3>
+      <button class="modal-close" onclick="closeModal('modal-agenda')">✕</button>
+    </div>
+    <div>
+      <div class="form-group">
+        <label class="form-label" for="inp-agenda-sala">Sala *</label>
+        <select id="inp-agenda-sala" class="form-control">
+          <option value="">— Selecione a sala —</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="inp-agenda-pessoa">Pessoa</label>
+        <select id="inp-agenda-pessoa" class="form-control">
+          <option value="">— Selecione a pessoa —</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo de Evento</label>
+        <select id="sel-agenda-evento" class="form-control sel-evento-tipo">
+          <option value="">— Selecione —</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group">
+          <label class="form-label" for="inp-agenda-inicio">Início *</label>
+          <input id="inp-agenda-inicio" class="form-control" type="datetime-local"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="inp-agenda-fim">Fim *</label>
+          <input id="inp-agenda-fim" class="form-control" type="datetime-local"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="inp-agenda-obs">Observação</label>
+        <textarea id="inp-agenda-obs" class="form-control" rows="2"
+          placeholder="Observações adicionais…" style="resize:vertical"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-agenda')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveAgenda()">💾 Agendar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div id="toast-container" class="toast-container"></div>
+
+<script src="/js/app.js"></script>
+</body>
+</html>
