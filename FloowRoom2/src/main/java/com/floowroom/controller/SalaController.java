@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,7 @@ public class SalaController {
 
     @Operation(summary = "Criar sala")
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SalaDTO.Response> criar(
             @Valid @RequestBody SalaDTO.Request req,
             @AuthenticationPrincipal Usuario logado) {
@@ -45,6 +47,7 @@ public class SalaController {
 
     @Operation(summary = "Atualizar sala")
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<SalaDTO.Response> atualizar(
             @PathVariable Long id,
             @Valid @RequestBody SalaDTO.Request req,
@@ -54,6 +57,7 @@ public class SalaController {
 
     @Operation(summary = "Deletar sala")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         salaService.deletar(id);
         return ResponseEntity.noContent().build();

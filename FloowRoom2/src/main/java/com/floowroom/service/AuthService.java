@@ -38,6 +38,7 @@ public class AuthService {
                 .nome(req.getNome())
                 .login(req.getLogin())
                 .senha(passwordEncoder.encode(req.getSenha()))
+                .admin(Boolean.TRUE.equals(req.getAdmin()))
                 .atualizadoPor(executor)
                 .build();
 
@@ -63,6 +64,7 @@ public class AuthService {
         resp.setUsuarioId(u.getUsuarioId());
         resp.setNome(u.getNome());
         resp.setLogin(u.getLogin());
+        resp.setAdmin(u.getAdmin());
         return resp;
     }
 }

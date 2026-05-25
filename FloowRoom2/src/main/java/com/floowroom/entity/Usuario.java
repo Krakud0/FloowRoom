@@ -36,6 +36,10 @@ public class Usuario implements UserDetails {
     @Column(nullable = false, length = 255)
     private String senha;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean admin = false;
+
     @Column(name = "atualizado_em")
     private LocalDateTime atualizadoEm;
 
@@ -52,6 +56,9 @@ public class Usuario implements UserDetails {
     // --- UserDetails ---
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (Boolean.TRUE.equals(admin)) {
+            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+        }
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 

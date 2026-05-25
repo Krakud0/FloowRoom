@@ -59,6 +59,48 @@ async function api(path, opts = {}) {
 }
 
 // ─── Auth ────────────────────────────────────────────────────
+function toggleAuth(isRegister) {
+  if (isRegister) {
+    $('#card-login').style.display = 'none';
+    $('#card-register').style.display = 'block';
+  } else {
+    $('#card-login').style.display = 'block';
+    $('#card-register').style.display = 'none';
+  }
+}
+
+async function register() {
+  const nomeVal  = $('#inp-reg-nome').value.trim();
+  const loginVal = $('#inp-reg-login').value.trim();
+  const senhaVal = $('#inp-reg-senha').value.trim();
+  const adminVal = $('#inp-reg-admin').checked;
+  const errEl    = $('#register-error');
+  errEl.style.display = 'none';
+
+  if (!nomeVal || !loginVal || !senhaVal) {
+    errEl.textContent = 'Preencha todos os campos';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  try {
+    const data = await api('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ nome: nomeVal, login: loginVal, senha: senhaVal, admin: adminVal })
+    });
+    if (!data) return;
+    token = data.token;
+    me    = { usuarioId: data.usuarioId, nome: data.nome, login: data.login, admin: data.admin };
+    localStorage.setItem('floowroom_token', token);
+    localStorage.setItem('floowroom_user', JSON.stringify(me));
+    toast('Conta criada com sucesso!', 'success');
+    showApp();
+  } catch (e) {
+    errEl.textContent = e.message || 'Erro ao realizar cadastro';
+    errEl.style.display = 'block';
+  }
+}
+
 async function login() {
   const loginVal = $('#inp-login').value.trim();
   const senhaVal = $('#inp-senha').value.trim();
@@ -72,7 +114,7 @@ async function login() {
     });
     if (!data) return;
     token = data.token;
-    me    = { usuarioId: data.usuarioId, nome: data.nome, login: data.login };
+    me    = { usuarioId: data.usuarioId, nome: data.nome, login: data.login, admin: data.admin };
     localStorage.setItem('floowroom_token', token);
     localStorage.setItem('floowroom_user', JSON.stringify(me));
     showApp();
@@ -90,15 +132,27 @@ function logout() {
   $('#login-screen').style.display = 'flex';
   $('#inp-login').value = '';
   $('#inp-senha').value = '';
+  $('#inp-reg-nome').value = '';
+  $('#inp-reg-login').value = '';
+  $('#inp-reg-senha').value = '';
+  $('#inp-reg-admin').checked = false;
+  toggleAuth(false);
 }
 
 function showApp() {
   $('#login-screen').style.display = 'none';
   $('#app').style.display = 'flex';
   // Preenche info do usuário
-  $('#user-name').textContent = me.nome;
+  $('#user-name').textContent = me.nome + (me.admin ? ' (Admin)' : '');
   $('#user-login').textContent = me.login;
   $('#user-avatar').textContent = initials(me.nome);
+  
+  // Oculta/exibe botão de criar sala dependendo se é admin
+  const btnNovaSala = $('#page-salas .page-header button');
+  if (btnNovaSala) {
+    btnNovaSala.style.display = me.admin ? 'inline-flex' : 'none';
+  }
+
   navigate('dashboard');
   loadDominio();
 }
@@ -200,8 +254,10 @@ function renderSalas(filter = '') {
       <td>${s.atualizadoPorNome || '—'}</td>
       <td>
         <div class="actions-cell">
-          <button class="btn btn-icon" title="Editar" onclick="openSalaModal(${s.salaId})">✏️</button>
-          <button class="btn btn-icon danger" title="Excluir" onclick="deleteSala(${s.salaId}, ${s.numero})">🗑️</button>
+          ${me.admin ? `
+            <button class="btn btn-icon" title="Editar" onclick="openSalaModal(${s.salaId})">✏️</button>
+            <button class="btn btn-icon danger" title="Excluir" onclick="deleteSala(${s.salaId}, ${s.numero})">🗑️</button>
+          ` : '<span style="color:var(--muted);font-size:.8rem">—</span>'}
         </div>
       </td>
     </tr>`).join('');

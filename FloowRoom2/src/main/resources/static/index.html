@@ -14,7 +14,8 @@
      LOGIN SCREEN
      ═══════════════════════════════════════════════════════════ -->
 <div id="login-screen" style="display:none">
-  <div class="login-card">
+  <!-- FORM LOGIN -->
+  <div class="login-card" id="card-login">
     <div class="login-logo">
       <div class="logo-icon">🏠</div>
       <h1>Floow<span>Room</span></h1>
@@ -34,6 +35,53 @@
     <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="login()">
       Entrar
     </button>
+    
+    <p style="text-align:center;margin-top:16px;font-size:.82rem">
+      Não tem conta? <a href="#" onclick="toggleAuth(true)" style="color:var(--primary);font-weight:600;text-decoration:none">Cadastre-se</a>
+    </p>
+
+    <p style="text-align:center;margin-top:20px;font-size:.78rem;color:var(--muted)">
+      FloowRoom v1.0 · Sistema de Agendamento
+    </p>
+  </div>
+
+  <!-- FORM CADASTRO -->
+  <div class="login-card" id="card-register" style="display:none">
+    <div class="login-logo">
+      <div class="logo-icon">🏠</div>
+      <h1>Floow<span>Room</span></h1>
+    </div>
+    <p class="login-subtitle">Criar nova conta no sistema</p>
+
+    <div id="register-error" class="login-error"></div>
+
+    <div class="form-group">
+      <label class="form-label" for="inp-reg-nome">Nome Completo</label>
+      <input id="inp-reg-nome" class="form-control" type="text" placeholder="Seu Nome"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="inp-reg-login">Login (Username)</label>
+      <input id="inp-reg-login" class="form-control" type="text" placeholder="usuario.login"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="inp-reg-senha">Senha</label>
+      <input id="inp-reg-senha" class="form-control" type="password" placeholder="Mínimo 6 caracteres"/>
+    </div>
+    <div class="form-group" style="display:flex;align-items:center;gap:8px;margin-top:12px;margin-bottom:12px">
+      <input id="inp-reg-admin" type="checkbox" style="width:18px;height:18px;cursor:pointer"/>
+      <label for="inp-reg-admin" style="font-size:.85rem;cursor:pointer;user-select:none;font-weight:500">
+        Cadastrar como Administrador (Admin)
+      </label>
+    </div>
+    
+    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="register()">
+      Cadastrar e Entrar
+    </button>
+    
+    <p style="text-align:center;margin-top:16px;font-size:.82rem">
+      Já tem conta? <a href="#" onclick="toggleAuth(false)" style="color:var(--primary);font-weight:600;text-decoration:none">Fazer Login</a>
+    </p>
+
     <p style="text-align:center;margin-top:20px;font-size:.78rem;color:var(--muted)">
       FloowRoom v1.0 · Sistema de Agendamento
     </p>

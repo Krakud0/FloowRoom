@@ -22,6 +22,8 @@ public class AuthDTO {
         @NotBlank(message = "Senha é obrigatória")
         @Size(min = 6, message = "Senha deve ter ao menos 6 caracteres")
         private String senha;
+
+        private Boolean admin;
     }
 
     @Data
@@ -40,5 +42,6 @@ public class AuthDTO {
         private Long usuarioId;
         private String nome;
         private String login;
+        private Boolean admin;
     }
 }
