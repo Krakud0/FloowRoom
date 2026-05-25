@@ -1,6 +1,5 @@
 # ============================================================
 #  render.yaml — Deploy automático no Render
-#  Documentação: https://render.com/docs/render-yaml-reference
 # ============================================================
 
 services:
@@ -8,19 +7,17 @@ services:
     name: floowroom-backend
     runtime: docker
     dockerfilePath: ./Dockerfile
-    plan: free          # altere para "starter" em produção
-    healthCheckPath: /api/auth/health
+    plan: free
     envVars:
       - key: PORT
-        value: 8080
-      # Configure estas variáveis no Render Dashboard > Environment:
+        value: 10000
       - key: DATABASE_URL
-        sync: false     # não sincronizar do repo por segurança
+        sync: false
       - key: DATABASE_USERNAME
         sync: false
       - key: DATABASE_PASSWORD
         sync: false
       - key: JWT_SECRET
-        generateValue: true   # Render gera automaticamente
+        generateValue: true
       - key: JWT_EXPIRATION
         value: 86400000
