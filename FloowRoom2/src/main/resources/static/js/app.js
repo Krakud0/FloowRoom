@@ -267,13 +267,38 @@ function openSalaModal(id = null) {
   const sala = id ? salas.find(s => s.salaId === id) : null;
   $('#modal-sala-title').textContent = sala ? `Editar Sala ${sala.numero}` : 'Nova Sala';
   $('#inp-sala-numero').value = sala?.numero || '';
+  
+  if (sala) {
+    $('#grp-sala-id').style.display = 'none';
+    $('#inp-sala-id').value = sala.salaId;
+  } else {
+    $('#grp-sala-id').style.display = 'block';
+    $('#inp-sala-id').value = '';
+  }
+
   $('#modal-sala').dataset.id = id || '';
   openModal('modal-sala');
 }
 
 async function saveSala() {
   const id = $('#modal-sala').dataset.id;
-  const payload = { numero: parseInt($('#inp-sala-numero').value) };
+  const salaIdVal = parseInt($('#inp-sala-id').value);
+  const numeroVal = parseInt($('#inp-sala-numero').value);
+  
+  if (!id && (!salaIdVal || salaIdVal < 1000 || salaIdVal > 9999)) {
+    toast('O ID da sala deve ser um número de 4 dígitos (1000 a 9999).', 'error');
+    return;
+  }
+  if (!numeroVal || numeroVal < 1) {
+    toast('Número da sala é obrigatório e deve ser maior que 0.', 'error');
+    return;
+  }
+
+  const payload = { 
+    salaId: id ? parseInt(id) : salaIdVal,
+    numero: numeroVal 
+  };
+
   try {
     if (id) {
       await api(`/salas/${id}`, { method: 'PUT', body: JSON.stringify(payload) });

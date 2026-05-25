@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 public class Sala {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sala_id")
     private Long salaId;
 

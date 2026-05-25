@@ -30,10 +30,14 @@ public class SalaService {
 
     @Transactional
     public SalaDTO.Response criar(SalaDTO.Request req, Long usuarioId) {
+        if (salaRepository.existsById(req.getSalaId())) {
+            throw new DadoDuplicadoException("ID da sala " + req.getSalaId() + " já cadastrado");
+        }
         if (salaRepository.existsByNumero(req.getNumero())) {
             throw new DadoDuplicadoException("Sala " + req.getNumero() + " já cadastrada");
         }
         Sala sala = Sala.builder()
+                .salaId(req.getSalaId())
                 .numero(req.getNumero())
                 .atualizadoPor(resolverUsuario(usuarioId))
                 .build();
