@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
  * Tabela: cadastros.tbSalas
  */
 @Entity
-@Table(schema = "cadastros", name = "tbSalas")
+@Table(name = "tbSalas")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

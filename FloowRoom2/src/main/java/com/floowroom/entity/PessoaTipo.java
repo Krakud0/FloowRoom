@@ -8,7 +8,7 @@ import lombok.*;
  * Exemplos: Aluno, Professor, Funcionário, Visitante, etc.
  */
 @Entity
-@Table(schema = "cadastro", name = "tbPessoaTipo")
+@Table(name = "tbPessoaTipo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

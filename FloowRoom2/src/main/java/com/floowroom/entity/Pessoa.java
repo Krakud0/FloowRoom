@@ -10,7 +10,7 @@ import java.time.LocalDate;
  * Representa o locatário/solicitante do agendamento.
  */
 @Entity
-@Table(schema = "cadastro", name = "tbPessoas")
+@Table(name = "tbPessoas")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

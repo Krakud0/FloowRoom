@@ -12,9 +12,9 @@ import java.util.List;
 @Repository
 public interface AgendaSalaRepository extends JpaRepository<AgendaSala, Long> {
 
-    List<AgendaSala> findBySalaSalaIdOrderByDatahoraInicioAsc(Long salaId);
+    List<AgendaSala> findBySala_SalaIdOrderByDatahoraInicioAsc(Long salaId);
 
-    List<AgendaSala> findByPessoapessoaIdOrderByDatahoraInicioDesc(Long pessoaId);
+    List<AgendaSala> findByPessoa_PessoaIdOrderByDatahoraInicioDesc(Long pessoaId);
 
     /**
      * Verifica sobreposição de horário para uma mesma sala.

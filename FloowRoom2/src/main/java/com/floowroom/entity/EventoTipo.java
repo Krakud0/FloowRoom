@@ -7,7 +7,7 @@ import lombok.*;
  * Tabela: dominio.tbEventoTipo
  */
 @Entity
-@Table(schema = "dominio", name = "tbEventoTipo")
+@Table(name = "tbEventoTipo")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

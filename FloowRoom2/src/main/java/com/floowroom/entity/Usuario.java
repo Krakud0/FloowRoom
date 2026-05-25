@@ -14,7 +14,7 @@ import java.util.List;
  * Tabela: seguranca.tbUsuarios
  */
 @Entity
-@Table(schema = "seguranca", name = "tbUsuarios")
+@Table(name = "tbUsuarios")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

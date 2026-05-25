@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(
-    schema = "agendamento",
     name = "tbAgendaSala",
     indexes = {
         @Index(name = "idx_agenda_sala_horario", columnList = "sala_id, datahora_inicio, datahora_fim")
